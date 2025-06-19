@@ -1,2 +1,2 @@
 # wiki_aerialbot
-Scripts to feed coordinates from Wikipedia to [æerialbot](https://github.com/doersino/aerialbot)
+Scripts to feed coordinates from Wikipedia to [ærialbot](https://github.com/doersino/aerialbot)
