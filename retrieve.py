@@ -35,7 +35,8 @@ def is_in_db(cursor, page_id):
 def add_to_db(cursor, id):
     print(f"Adding {id}")
     url = f"{COORD_URL_BASE}{id}"
-    response = requests.get(url)
+    headers = {'User-Agent': 'Wiki-Aerialbot/0.1 (https://github.com/squaregoldfish/wiki_aerialbot; squaregoldfish@mastodon.social)'}
+    response = requests.get(url, headers=headers)
     page_data = json.loads(response.content)
     page = next(iter(page_data["query"]["pages"].values()))
 
