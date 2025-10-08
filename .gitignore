@@ -201,3 +201,5 @@ cython_debug/
 *.shp
 *.shx
 *.prj
+
+config.toml

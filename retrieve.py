@@ -4,15 +4,15 @@ import feedparser
 import requests
 import json
 from datetime import datetime
+import toml
 
-DB_FILE = "wikipedia.sqlite"
 FEED_URL = 'https://en.wikipedia.org/w/index.php?title=Special:NewPages&feed=rss'
 COORD_URL_BASE = 'https://en.wikipedia.org/w/api.php?action=query&prop=coordinates&format=json&titles='
 
-def init_db():
-    if not os.path.exists(DB_FILE):
+def init_db(db_file):
+    if not os.path.exists(db_file):
         print("Initialising database...")
-        with sqlite3.connect(DB_FILE) as conn:
+        with sqlite3.connect(db_file) as conn:
             cursor = conn.cursor()
             
             cursor.execute(""" 
@@ -54,27 +54,27 @@ def add_to_db(cursor, id):
     cursor.execute("INSERT INTO pages (id, title, longitude, latitude, posted, loaded) VALUES (?, ?, ?, ?, ?, ?)",
         (id, title, longitude, latitude, False, datetime.now()))
 
+def adapt_datetime(dt):
+    return dt.isoformat()
 
-def main():
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        
-        # Download and parse new pages
-        feed = feedparser.parse(FEED_URL)
+# Go
+config = toml.load('config.toml')
 
-        # Extract page IDs
-        ids = [entry.id.split("/wiki/",1)[1] for entry in feed.entries]
+init_db(config['database']['file'])
+sqlite3.register_adapter(datetime, adapt_datetime)
 
-        for id in ids:
-            if not is_in_db(cursor, id):
-                add_to_db(cursor, id)
+with sqlite3.connect(config['database']['file']) as conn:
+    cursor = conn.cursor()
+    
+    # Download and parse new pages
+    feed = feedparser.parse(FEED_URL)
 
-        conn.commit()
+    # Extract page IDs
+    ids = [entry.id.split("/wiki/",1)[1] for entry in feed.entries]
 
+    for id in ids:
+        if not is_in_db(cursor, id):
+            add_to_db(cursor, id)
 
-
-
-if __name__ == "__main__":
-    init_db()
-    main()
+    conn.commit()
 
