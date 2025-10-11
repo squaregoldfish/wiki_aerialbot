@@ -7,7 +7,7 @@ from datetime import datetime
 import toml
 
 FEED_URL = 'https://en.wikipedia.org/w/index.php?title=Special:NewPages&feed=rss'
-COORD_URL_BASE = 'https://en.wikipedia.org/w/api.php?action=query&prop=coordinates&format=json&titles='
+PROPS_URL_BASE = 'https://en.wikipedia.org/w/api.php?action=query&prop=coordinates|extracts&explaintext&format=json&titles='
 
 def init_db(db_file):
     if not os.path.exists(db_file):
@@ -19,6 +19,7 @@ def init_db(db_file):
                 CREATE TABLE "pages" (
                 "id"    TEXT NOT NULL UNIQUE,
                 "title" TEXT NOT NULL,
+                "page_text" TEXT,
                 "longitude" REAL,
                 "latitude"  REAL,
                 "posted"    INTEGER NOT NULL DEFAULT 0,
@@ -34,13 +35,17 @@ def is_in_db(cursor, page_id):
 
 def add_to_db(cursor, id):
     print(f"Adding {id}")
-    url = f"{COORD_URL_BASE}{id}"
+    url = f"{PROPS_URL_BASE}{id}"
     headers = {'User-Agent': 'Wiki-Aerialbot/0.1 (https://github.com/squaregoldfish/wiki_aerialbot; squaregoldfish@mastodon.social)'}
     response = requests.get(url, headers=headers)
     page_data = json.loads(response.content)
     page = next(iter(page_data["query"]["pages"].values()))
 
     title = page["title"]
+    if 'extract' in page:
+        page_text = page["extract"]
+    else:
+        page_text = ""
 
     longitude = None
     latitude = None
@@ -51,8 +56,8 @@ def add_to_db(cursor, id):
             longitude = float(coords["lon"])
             latitude = float(coords["lat"])
 
-    cursor.execute("INSERT INTO pages (id, title, longitude, latitude, posted, loaded) VALUES (?, ?, ?, ?, ?, ?)",
-        (id, title, longitude, latitude, False, datetime.now()))
+    cursor.execute("INSERT INTO pages (id, title, page_text, longitude, latitude, posted, loaded) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (id, title, page_text, longitude, latitude, False, datetime.now()))
 
 def adapt_datetime(dt):
     return dt.isoformat()

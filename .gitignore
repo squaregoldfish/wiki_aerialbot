@@ -203,3 +203,5 @@ cython_debug/
 *.prj
 
 config.toml
+
+.vscode
