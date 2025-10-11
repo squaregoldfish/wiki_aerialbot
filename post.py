@@ -25,3 +25,6 @@ with sqlite3.connect(config['database']['file']) as conn:
     os.chdir(cwd)
 
     cursor.execute('UPDATE pages SET posted=1 WHERE id=?', (record[0],))
+
+    # Delete old records with no position info
+    cursor.execute('DELETE FROM pages WHERE longitude IS NULL AND loaded < (SELECT loaded FROM pages WHERE id = ?)', (record[0], ))
