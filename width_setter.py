@@ -11,6 +11,10 @@ with sqlite3.connect(config['database']['file']) as conn:
     finished = False
 
     while not finished:
+        cursor.execute('SELECT COUNT(*) FROM pages WHERE human_width IS NULL')
+        print(cursor.fetchall()[0][0])
+
+
         cursor.execute('SELECT id, title, longitude, latitude FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL ORDER BY loaded DESC')
         record = cursor.fetchone()
 
@@ -58,4 +62,5 @@ with sqlite3.connect(config['database']['file']) as conn:
 
         if metres is not None:
             cursor.execute('UPDATE pages SET human_width = ? WHERE id=?', (metres, record[0]))
+            conn.commit()
 
