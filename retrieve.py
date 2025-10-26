@@ -22,6 +22,8 @@ def init_db(db_file):
                 "page_text" TEXT,
                 "longitude" REAL,
                 "latitude"  REAL,
+                "ml_width" INTEGER,
+                "human_width" INTEGER,
                 "posted"    INTEGER NOT NULL DEFAULT 0,
                 "loaded" timestamp,
                 PRIMARY KEY("id"))
