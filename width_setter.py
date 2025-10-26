@@ -18,13 +18,26 @@ with sqlite3.connect(config['database']['file']) as conn:
             finished = False
             continue
 
+        lon = float(record[2])
+        lon_h = 'E' if lon >= 0 else 'W'
+        if lon < 0:
+            lon = lon * -1
+
+        lat = float(record[3])
+        lat_h = 'N' if lat >= 0 else 'S'
+        if lat < 0:
+            lat = lat * -1
+
         print()
 
         url = f'https://en.wikipedia.org/wiki/{record[0]}'
         print(record[1])
         print(url)
         print()
-        print(f'{record[2]}{"E" if record[2] >= 0 else "W"} {record[3]}{"N" if record[3] >= 0 else "S"}')
+        
+        
+        
+        print(f'{lon}{lon_h} {lat}{lat_h}')
         print()
 
         input_valid = False
