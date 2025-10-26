@@ -11,7 +11,7 @@ with sqlite3.connect(config['database']['file']) as conn:
     finished = False
 
     while not finished:
-        cursor.execute('SELECT COUNT(*) FROM pages WHERE human_width IS NULL')
+        cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL')
         print(cursor.fetchall()[0][0])
 
 
