@@ -35,8 +35,6 @@ with sqlite3.connect(config['database']['file']) as conn:
         print(url)
         print()
         
-        
-        
         print(f'{lon}{lon_h} {lat}{lat_h}')
         print()
 

@@ -9,7 +9,7 @@ config = toml.load('config.toml')
 with sqlite3.connect(config['database']['file']) as conn:
     cursor = conn.cursor()
 
-    cursor.execute('SELECT id, title, longitude, latitude, ml_width, human_width FROM pages WHERE longitude IS NOT NULL AND posted = 0 ORDER BY loaded DESC')
+    cursor.execute('SELECT id, title, longitude, latitude, ml_width, human_width FROM pages WHERE longitude IS NOT NULL AND (ml_width IS NOT NULL OR human_width IS NOT NULL) AND posted = 0 ORDER BY loaded DESC')
     record = cursor.fetchone()
     print(record)
 
