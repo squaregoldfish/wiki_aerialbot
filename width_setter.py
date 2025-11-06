@@ -1,6 +1,47 @@
 import sqlite3
 import toml
 
+def process_metres(conn, cursor, id, input):
+    result = False
+
+    metres = None
+
+    try:
+        metres = int(input)
+        if metres < 50:
+            metres = 50
+        result = True
+    except:
+        pass
+
+    if metres is not None:
+        cursor.execute('UPDATE pages SET human_width = ? WHERE id = ?', (metres, id))
+        conn.commit()
+
+    return result
+
+def get_float(prompt):
+    
+    result = None
+    valid = False
+    
+    while not valid:
+        float_input = input(f'{prompt}: ')
+        try:
+            result = float(float_input)
+            valid = True
+        except:
+            pass
+
+    return result
+
+
+def update_coordinates(conn, cursor, id):
+    print()
+    east = get_float("East")
+    north = get_float("North")
+
+    cursor.execute('UPDATE pages SET longitude = ?, latitude = ? WHERE id = ?', (east, north, id))
 
 # Here we go
 config = toml.load('config.toml')
@@ -51,27 +92,22 @@ with sqlite3.connect(config['database']['file']) as conn:
         print()
         
         print(f'{lon}{lon_h} {lat}{lat_h}')
-        print()
+
 
         input_valid = False
-        metres = None
 
         while not input_valid:
+            print()
             user_input = input("Enter size: ")
 
             if user_input == 'q':
                 input_valid = True
                 finished = True
+            elif user_input == 'c':
+                # Don't set the input as valid. That way, when we come back
+                # we'll be asked for the size again.
+                update_coordinates(conn, cursor, record[0])
             else:
-                try:
-                    metres = int(user_input)
-                    if metres < 50:
-                        metres = 50
-                    input_valid = True
-                except:
-                    pass
+                input_valid = process_metres(conn, cursor, record[0], user_input)
 
-        if metres is not None:
-            cursor.execute('UPDATE pages SET human_width = ? WHERE id=?', (metres, record[0]))
-            conn.commit()
 
