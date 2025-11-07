@@ -103,6 +103,10 @@ with sqlite3.connect(config['database']['file']) as conn:
             if user_input == 'q':
                 input_valid = True
                 finished = True
+            elif user_input == 'd':
+                cursor.execute('DELETE FROM pages WHERE id = ?', (record[0], ))
+                conn.commit()
+                input_valid = True
             elif user_input == 'c':
                 # Don't set the input as valid. That way, when we come back
                 # we'll be asked for the size again.
