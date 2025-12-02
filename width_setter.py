@@ -38,8 +38,8 @@ def get_float(prompt):
 
 def update_coordinates(conn, cursor, id):
     print()
-    east = get_float("East")
     north = get_float("North")
+    east = get_float("East")
 
     cursor.execute('UPDATE pages SET longitude = ?, latitude = ? WHERE id = ?', (east, north, id))
 
