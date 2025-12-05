@@ -4,3 +4,6 @@ file=''
 [post]
 path='aerialbot'
 
+[size_server]
+port=65535
+
