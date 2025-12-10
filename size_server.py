@@ -3,11 +3,14 @@ import toml
 import sqlite3
 
 def get_size_count(db_file):
-    with sqlite3.connect(db_file) as conn:
-        cursor = conn.cursor()
-        cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL')
-        records = cursor.fetchall()
-        return records[0][0]
+    try:
+        with sqlite3.connect(db_file) as conn:
+                cursor = conn.cursor()
+                cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL')
+                records = cursor.fetchall()
+                return records[0][0]
+    except:
+        return None
 
 def start_server(port, db_file):
     # Create a socket object
