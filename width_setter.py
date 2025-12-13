@@ -49,6 +49,18 @@ config = toml.load('config.toml')
 with sqlite3.connect(config['database']['file']) as conn:
     cursor = conn.cursor()
 
+    # Print preamble information
+    cursor.execute('SELECT COUNT(*) FROM pages WHERE human_width IS NOT NULL AND posted = 0')
+    records = cursor.fetchone()
+    print(f'Unposted articles: {records[0]}')
+
+    cursor.execute('SELECT loaded FROM pages WHERE human_width IS NOT NULL AND posted = 0 ORDER BY loaded ASC LIMIT 1')
+    records = cursor.fetchone()
+    print(f'Earliest unposted article: {records[0]}')
+
+    print('\n')
+
+
     finished = False
 
     while not finished:
