@@ -64,7 +64,7 @@ with sqlite3.connect(config['database']['file']) as conn:
     finished = False
 
     while not finished:
-        cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL')
+        cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL ORDER BY loaded ASC')
 
         records = cursor.fetchall()
 
@@ -79,7 +79,7 @@ with sqlite3.connect(config['database']['file']) as conn:
 
         print(count)
 
-        cursor.execute('SELECT id, title, longitude, latitude FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL ORDER BY loaded DESC')
+        cursor.execute('SELECT id, title, longitude, latitude, loaded FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL ORDER BY loaded ASC')
         record = cursor.fetchone()
 
         if record is None:
@@ -98,6 +98,7 @@ with sqlite3.connect(config['database']['file']) as conn:
 
         print()
 
+        print(record[4])
         url = f'https://en.wikipedia.org/wiki/{record[0]}'
         print(record[1])
         print(url)
