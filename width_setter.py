@@ -1,5 +1,6 @@
 import sqlite3
 import toml
+from datetime import datetime
 
 def process_metres(conn, cursor, id, input):
     result = False
@@ -63,6 +64,8 @@ with sqlite3.connect(config['database']['file']) as conn:
 
     finished = False
 
+    last_hour = -1
+
     while not finished:
         cursor.execute('SELECT COUNT(*) FROM pages WHERE longitude IS NOT NULL AND human_width IS NULL ORDER BY loaded ASC')
 
@@ -98,7 +101,14 @@ with sqlite3.connect(config['database']['file']) as conn:
 
         print()
 
-        print(record[4])
+        record_time = datetime.fromisoformat(record[4])
+
+        if record_time.hour < last_hour:
+            print('\n\n\n\n\n\n=== NEW DAY ===\n\n')
+
+        last_hour = record_time.hour
+
+        print(record_time.strftime('%Y-%m-%d %H:%M:%S'))
         url = f'https://en.wikipedia.org/wiki/{record[0]}'
         print(record[1])
         print(url)

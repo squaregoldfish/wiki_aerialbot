@@ -19,7 +19,6 @@ def init_db(db_file):
                 CREATE TABLE "pages" (
                 "id"    TEXT NOT NULL UNIQUE,
                 "title" TEXT NOT NULL,
-                "page_text" TEXT,
                 "longitude" REAL,
                 "latitude"  REAL,
                 "ml_width" INTEGER,
@@ -44,11 +43,6 @@ def add_to_db(cursor, id):
     page = next(iter(page_data["query"]["pages"].values()))
 
     title = page["title"]
-    if 'extract' in page:
-        page_text = page["extract"]
-    else:
-        page_text = ""
-
     longitude = None
     latitude = None
 
@@ -58,8 +52,8 @@ def add_to_db(cursor, id):
             longitude = float(coords["lon"])
             latitude = float(coords["lat"])
 
-    cursor.execute("INSERT INTO pages (id, title, page_text, longitude, latitude, posted, loaded) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (id, title, page_text, longitude, latitude, False, datetime.now()))
+    cursor.execute("INSERT INTO pages (id, title, longitude, latitude, posted, loaded) VALUES (?, ?, ?, ?, ?, ?)",
+        (id, title, longitude, latitude, False, datetime.now()))
 
 def adapt_datetime(dt):
     return dt.isoformat()
