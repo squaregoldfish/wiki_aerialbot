@@ -1,6 +1,7 @@
+from datetime import datetime
+import re
 import sqlite3
 import toml
-from datetime import datetime
 
 def process_metres(conn, cursor, id, input):
     result = False
@@ -21,26 +22,23 @@ def process_metres(conn, cursor, id, input):
 
     return result
 
-def get_float(prompt):
-    
-    result = None
-    valid = False
-    
-    while not valid:
-        float_input = input(f'{prompt}: ')
-        try:
-            result = float(float_input)
-            valid = True
-        except:
-            pass
-
-    return result
-
-
 def update_coordinates(conn, cursor, id):
     print()
-    north = get_float("North")
-    east = get_float("East")
+
+    ok = False
+    north = None
+    east = None
+
+    while not ok:
+        pos_text = input('Google Earth coordinates: ')
+
+        pattern = '([^ ]*)° *([^ ]*)°'
+        r = re.search(pattern, pos_text)
+
+        if len(r.groups()) == 2:
+            north = r.group(1)
+            east = r.group(2)
+            ok = True
 
     cursor.execute('UPDATE pages SET longitude = ?, latitude = ? WHERE id = ?', (east, north, id))
 
